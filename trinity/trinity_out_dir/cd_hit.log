@@ -1,0 +1,36 @@
+Output
+----------------------------------------------------------------
+Option -T is ignored: multi-threading with OpenMP is NOT enabled!
+total seq: 78484
+longest and shortest : 13045 and 201
+Total letters: 50633085
+Sequences have been sorted
+
+Approximated minimal memory consumption:
+Sequence: 61M
+Buffer: 1 X 15M = 15M
+Table: 1 X 18M = 18M
+Miscellaneous   : 5M
+Total: 100M
+
+Table limit with the given memory limit:
+Max number of representatives: 674191
+Max number of word counting entries: 87480203
+
+comparing sequences from0  to78484
+..........10000  finished6841  clusters
+..........20000  finished14040  clusters
+..........30000  finished21251  clusters
+..........40000  finished28718  clusters
+..........50000  finished36228  clusters
+..........60000  finished43971  clusters
+..........70000  finished51921  clusters
+........
+78484  finished58620  clusters
+
+Approximated maximum memory consumption: 380M
+writing new database
+writing clustering information
+program completed !
+
+Total CPU time 24056.70

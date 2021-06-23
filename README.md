@@ -140,7 +140,7 @@ cd-hit-est -i Trinity.fasta -o output.fasta -T 12 -t 1 -c 0.9
 A questo punto non ero sicuro di cosa ci fosse nei due file di output di `cd-hit-est`. Inizialmente pensavo che da una parte, in [output.fasta](https://github.com/die-lab/gamergates_project/blob/main/trinity/trinity_out_dir/output.fasta), ci fossero solamente le reads rappresentative, mentre in [output.fasta.clstr](https://github.com/die-lab/gamergates_project/blob/main/trinity/trinity_out_dir/output.fasta.clstr) ci fossero tutti i diversi cluster. Ciò non mi torna però perchè se greppo ">" in entrambi i file mi danno un numero molto diverso di righe. Dovrebbero infatti avere, questi due file, lo stesso numero di "sequenze", con da una parte solamente la sequenza rappresentativa dopo l'header con >, e dall'altra l'header, ossia il numero di cluster, indicato con >, seguito da un numero variabile di righe che mi indicano quali reads sono state abbinate a quel cluster. Riassumendo, pensavo ci fosse una sequenza rappresentativa per ogni cluster, ma invece non è così (il numero di cluster è molto più alto), e non ne ho capito il motivo. 
 
 #### Diamond
-Sono passato quindi all'annotazione. Per prima cosa devo costruire il database che userà Diamond. I due file in uscita da queste annotazioni sono rispettivamente [ouptup](https://raw.githubusercontent.com/die-lab/gamergates_project/main/diamond/ouptup) e [out.tsv](https://raw.githubusercontent.com/die-lab/gamergates_project/main/diamond/out.tsv)
+Sono passato quindi all'annotazione. Per prima cosa devo costruire il database che userà Diamond. I due file in uscita da queste annotazioni sono rispettivamente [ouptup](https://raw.githubusercontent.com/die-lab/gamergates_project/main/diamond/ouptup) e [out.tsv](https://raw.githubusercontent.com/die-lab/gamergates_project/main/diamond/out.tsv).
 ```get databases
 wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz
 wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdmp.zip
@@ -154,4 +154,31 @@ diamond blastx -q ../trinity/trinity_out_dir/output.fasta -d nr_diamond -o out.t
 ```
 Qui non avevo usato blastp perchè ovviamente non andava, avendo ancora le sequenze nucleotidiche e non amminoacidiche. Motivo per cui l'ho rifatto, dopo un po', quando avevo anche le sequenze amminoacidiche in uscita da TransDecoder.
 
+#### TransDecoder
+È stato usato per predirre le ORFs tra i geni assemblati, o meglio partendo dal file fasta assemblato che deriva da Trinity, dalla quale sono state però eliminate le reads ridondanti. Il primo step mi è servito anche per tradurre in amminoacidiche le sequenze nucleotidiche, così da poter utilizzare diamond blastp. Utilizzando questo strumento per la traduzione si va inevitabilmente a perdere tutte le sequenze inferiori a 100 amminoacidi di lunghezza. Si potrebbe cambiare questa threshold con un semplice flag, ma ho voluto tenerla così perchè, come dice il manuale di TransDecoder, andrebbero ad aumentare il numero di falsi positivi. La percentuale di geni sopravvissuta alla traduzione è del 60% circa (36095 contro i 58620 dell'assemblaggio senza isoforme).
+```
+cd ~/project/
+if [ -d transdecoder ]
+  then rm -r transdecoder
+  fi
+mkdir transdecoder
+cd transdecoder
+
+TransDecoder.LongOrfs -t ../trinity/trinity_out_dir/output.fasta
+```
+```
+diamond blastp --query output.fasta.transdecoder_dir/longest_orfs.pep --db /var/local/uniprot/uniprot_sprot.fasta-norep_per_diamond.dmnd --eval
+ue 1e-05 --max-target-seqs 1 --threads 5 --outfmt 6 --out blastp.outfmt6 #rememba to activate base env before running it 
+
+
+hmmscan --cpu 8 --domtblout pfam.domtblout /var/local/Pfam/Pfam-A.hmm output.fasta.transdecoder_dir/longest_orfs.pep 
+```
+```
+TransDecoder.Predict -t ../trinity/trinity_out_dir/output.fasta --retain_pfam_hits pfam.domtblout --retain_blastp_hits blastp.outfmt6
+```
+Ed ho spostato tutti quelli che erano i file di output nella cartella `/home/STUDENTI/diego.carli/project/transdecoder/predicted.output.fasta.transdecoder`.
+
+TransDecoder.Predict ci sta tanto per esaminare le sequenze. Per capire a che punto si è dell'analisi si può usare lo script `where_are_we_transdecoder.py`. Ovviamente ci devi passare sia un file in cui ci sono tutti i geni dell'output.fasta che sto esaminando, e il nome della sequenza a cui si è arrivati, che si può vedere guardando quelllo che da a schermo TransDecoder.Predict.
+
+Ho fatto la doppia prova con TransDecoder.Predict. Da una parte l'ho fatto partire senza nessun file proveniente dalle analisi del database (file da cui il comando decide di tenere alcune sequenze in più, appunto perchè trovate all'interno di qui database, se ho capito bene). Dall'altra invece ho fatto partire il comando come si vede sopra, con --retain e i file da diamond blastp e da hmmscan. In effetti questa seconda opzione mi ha dato un maggior numero di sequenze, perchè ne tiene di più (19366 contro le 16700 del comando più spiccio, senza --retain). Per l'annotazione GO con Panzer mi sono tenuto [quello]() con più sequenze.
 

@@ -139,4 +139,19 @@ cd-hit-est -i Trinity.fasta -o output.fasta -T 12 -t 1 -c 0.9
 ```
 A questo punto non ero sicuro di cosa ci fosse nei due file di output di `cd-hit-est`. Inizialmente pensavo che da una parte, in [output.fasta](https://github.com/die-lab/gamergates_project/blob/main/trinity/trinity_out_dir/output.fasta), ci fossero solamente le reads rappresentative, mentre in [output.fasta.clstr](https://github.com/die-lab/gamergates_project/blob/main/trinity/trinity_out_dir/output.fasta.clstr) ci fossero tutti i diversi cluster. Ciò non mi torna però perchè se greppo ">" in entrambi i file mi danno un numero molto diverso di righe. Dovrebbero infatti avere, questi due file, lo stesso numero di "sequenze", con da una parte solamente la sequenza rappresentativa dopo l'header con >, e dall'altra l'header, ossia il numero di cluster, indicato con >, seguito da un numero variabile di righe che mi indicano quali reads sono state abbinate a quel cluster. Riassumendo, pensavo ci fosse una sequenza rappresentativa per ogni cluster, ma invece non è così (il numero di cluster è molto più alto), e non ne ho capito il motivo. 
 
+#### Diamond
+Sono passato quindi all'annotazione. Per prima cosa devo costruire il database che userà Diamond. I due file in uscita da queste annotazioni sono rispettivamente [ouptup](https://github.com/die-lab/gamergates_project/blob/main/diamond/ouptup) e [out.tsv](https://raw.githubusercontent.com/die-lab/gamergates_project/main/diamond/out.tsv)
+```get databases
+wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdmp.zip
+```
+```diamond
+makedb diamond makedb --in /var/local/uniprot/uniprot_sprot.fasta-norep --db ./nr_diamond --taxonmap prot.accession2taxid --taxonnodes nodes.dmp --taxonnames names.dmp
+
+diamond blastx --db nr_diamond.dmnd --query ../trinity/trinity_out_dir/output.fasta  -p 12 -o ouptup --outfmt 6 qseqid sseqid evalue bitscore pident staxids stitle --max-target-seqs 5 --evalue 0.005
+
+diamond blastx -q ../trinity/trinity_out_dir/output.fasta -d nr_diamond -o out.tsv --very-sensitive
+```
+Qui non avevo usato blastp perchè ovviamente non andava, avendo ancora le sequenze nucleotidiche e non amminoacidiche. Motivo per cui l'ho rifatto, dopo un po', quando avevo anche le sequenze amminoacidiche in uscita da TransDecoder.
+
 

@@ -1,0 +1,12 @@
+TRINITY_DN10003_c0_g1_i1.p2ACBD5_PONAB2.89e-1268.937.9ACBD5_PONAB Acyl-CoA-binding domain-containing protein 5 OS=Pongo abelii GN=ACBD5 PE=2 SV=1
+TRINITY_DN10003_c0_g1_i1.p2ACBD5_RAT5.19e-1268.237.9ACBD5_RAT Acyl-CoA-binding domain-containing protein 5 OS=Rattus norvegicus GN=Acbd5 PE=1 SV=1
+TRINITY_DN10003_c0_g1_i1.p2ACBD5_MOUSE5.20e-1268.237.9ACBD5_MOUSE Acyl-CoA-binding domain-containing protein 5 OS=Mus musculus GN=Acbd5 PE=1 SV=1
+TRINITY_DN10003_c0_g1_i1.p2ACBD5_HUMAN5.32e-1268.237.9ACBD5_HUMAN Acyl-CoA-binding domain-containing protein 5 OS=Homo sapiens GN=ACBD5 PE=1 SV=1
+TRINITY_DN10003_c0_g1_i1.p2ECI2_HUMAN8.03e-1267.434.5ECI2_HUMAN Enoyl-CoA delta isomerase 2, mitochondrial OS=Homo sapiens GN=ECI2 PE=1 SV=4
+TRINITY_DN10003_c0_g1_i1.p1MET23_XENLA3.93e-6721149.8MET23_XENLA Methyltransferase-like protein 23 OS=Xenopus laevis GN=mettl23 PE=2 SV=1
+TRINITY_DN10003_c0_g1_i1.p1MET23_MOUSE5.25e-6420348.5MET23_MOUSE Methyltransferase-like protein 23 OS=Mus musculus GN=Mettl23 PE=2 SV=1
+TRINITY_DN10003_c0_g1_i1.p1MET23_RAT1.77e-6320149.5MET23_RAT Methyltransferase-like protein 23 OS=Rattus norvegicus GN=Mettl23 PE=2 SV=1
+TRINITY_DN10003_c0_g1_i1.p1MET23_HUMAN4.17e-5618146.4MET23_HUMAN Methyltransferase-like protein 23 OS=Homo sapiens GN=METTL23 PE=1 SV=3
+TRINITY_DN10003_c0_g1_i1.p1YJ99_YEAST3.84e-0547.824.9YJ99_YEAST Uncharacterized protein YJR129C OS=Saccharomyces cerevisiae (strain ATCC 204508 / S288c) GN=YJR129C PE=1 
+
+#è stato messo solamente l'head per ragioni di spazio.

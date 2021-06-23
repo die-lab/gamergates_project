@@ -1,3 +1,0 @@
-There is not actually a easy way to see these html file directly from here. 
-The fastest one I found is to open each one here, as a raw file (text file), copy all the content with ctrl+a and then paste it in a new file on you laptop.
-Otherwise you can download the whole repository using git command on the terminal. Then open that new file with your browser.

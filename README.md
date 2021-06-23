@@ -43,7 +43,7 @@ fastqc ../fastq/*.fastq -o fastqc
 ```
 
 #### Trimming
-Le reads sono state trimmate e poi analizzate con fastqc, per vedere quanto erano migliorate con il trimming. I risultati si possono vedere [qui](https://github.com/die-lab/gamergates_project/tree/main/fastqc)
+Le reads sono state trimmate e poi analizzate con fastqc, per vedere quanto erano migliorate con il trimming. I risultati si possono vedere [qui.](https://github.com/die-lab/gamergates_project/tree/main/fastqc)
 ```create the directory for storing trimmed reads
 if [ -d trimmomatic ]
   then rm -r trimmomatic
@@ -100,7 +100,7 @@ mv ../../trimmomatic/*.readcount .
 cd ..
 ```
  ##### Checking trinity output
- Prima di tutto è stata fatta una RNA-seq read rapresentation dell'assemblaggio.\
+ Prima di tutto è stata fatta una RNA-seq read rapresentation dell'assemblaggio. Le statistiche dell'allineamento, visibili qui, non sono male. Meno del 9% delle reads da cui si è ottenuto l'assemblaggio non mappano sull'assemblaggio stesso. 
  ```
   cd /home/STUDENTI/diego.carli/project/trinity/trinity_out_dir/.
   mkdir checking
@@ -114,7 +114,29 @@ cd ..
   rm all_reads.fastq
   cd ..
  ```
+  Poi si fanno un po' di statistiche. Dal file [trinity_check.txt](https://github.com/die-lab/gamergates_project/blob/main/trinity/trinity_out_dir/checking/trinity_check.txt) vengono mostrate alcune statistiche molto utili, come ad esempio l'N50, che raggiunge un valore abbastanza buono, sia considerando tutti i "geni", ovvero i contig trovati, che considerando solamente le isoforme più lunghe. 
+ ```
+ TrinityStats.pl Trinity.fasta > trinity_check.txt
+ ```
+ Poi gli assemblaggi sono stati caricati su gVolante  per l'analisi della qualità. LQuesta analisi è stata ripetuta più volte, settando diversamente i parametri.
+ Per vedere i risultati andare alla pagina dedicata ed inserire il job ID (questo qui sotto, ma senza "ID").
+ 
+ * ID 202106031822-6R7ADFXGD3F82VXR. sequence type: trans, program: Busco1, Reference_gene_set: Arthropoda
+ * ID 202106031921-GV3JR6CZ26AAZKMX. sequence type: trans, program: Busco2-3, Reference_gene_set: Arthropoda
 
+È evidente che l'analisi con Busco,v2-v3 è molto più soddisfacente rispetto a Busco,v1.
+Probabilmente dipende dal tipo di set di geni ortologhi nella quale questi programmi fanno la ricerca. Busco,v2-v3 essendo stato rilasciato dopo, avrà probabilmente un dataset più grande e più aggiornato. Con solamente 26 gebi core mancanti secondo l'analisi di gVolante più promettente, penso si possa considera l'assemblaggio come buono. 
 
+#### Isoform redundancy
+Ho utilizzato Cd-hit perchè abbiamo visto che non necessariamente l'isoforma più lunga, che trovava lo script in perl di trinity per ridurre le isoforme, era quella più corretta . Vado allora con CD-HIT, che però vuole un file formattato diverso da quello che esce da trinity.
+```modifico l'header e metto la sequenza su una sola riga usando lo script di Mariangela
+sed -i 's/ len=.\+//g' Trinity.fasta
+cp /home/STUDENTI/diego.carli/didattica-main/2_bash_scripting/scripts/oneline_fasta.sh .
+sh oneline_fasta.sh Trinity.fasta
+```
+```
+cd-hit-est -i Trinity.fasta -o output.fasta -T 12 -t 1 -c 0.9
+```
+Non sono sicuro di cosa ci sia nei due file di output che mi ha fatto cd-hit-est, magari chiedi. Inizialmente pensavo che da una parte, in <output.fasta>, ci fossero solamente le reads rappresentative, mentre in <output.fasta.clstr> ci fossero tutti i diversi cluster. Ciò non mi torna però perchè se greppo ">" in entrambi i file mi danno un numero molto diverso di righe. Dovrebbero infatti avere, questi due file, lo stesso numero di righe, con da una parte solamente la sequenza rappresentativa dopo l'header con >, e dall'altra l'header, ossia il numero di cluster, indicato con >, seguito da un numero variabile di righe che mi indicano quali reads sono state abbinate a quel cluster. Riassumendo, pensavo ci fosse una sequenza rappresentativa per ogni cluster, ma invece non è così (il numero di cluster è molto più alto). Il file trinity_results/cd_hit.log qui su github mi da le informazioni sulla corsa di cd-hit-est.
 
 

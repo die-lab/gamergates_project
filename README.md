@@ -43,7 +43,7 @@ fastqc ../fastq/*.fastq -o fastqc
 ```
 
 #### Trimming
-Le reads sono state trimmate e poi analizzate con fastqc, per vedere quanto erano migliorate con il trimming.
+Le reads sono state trimmate e poi analizzate con fastqc, per vedere quanto erano migliorate con il trimming. I risultati si possono vedere [qui](https://github.com/die-lab/gamergates_project/tree/main/fastqc)
 ```create the directory for storing trimmed reads
 if [ -d trimmomatic ]
   then rm -r trimmomatic
@@ -76,7 +76,7 @@ queens, 120d | SRR5909301 | 22593965 | 15206110 | 0.67 |
 queens, 120d | SRR5909299 | 20493983 | 12306915 | 0.60 |
 
 #### Trinity
-Sono passato quindi alla fase di assemblaggio del trascrittoma. 
+Sono passato quindi alla fase di assemblaggio del trascrittoma. Essendoci relativamente poche sequenze, o perlomeno file fastq con una dimensione accettabile, ho fatto partire l'analisi di Trinity senza prima fare il subsampling. Sarebbe stato meglio avere più campioni e di questi prenderne solamente una parte, così da avere delle sequenze più rappresentative. Putroppo però i campioni erano solamente questi qui.
 ```create the directory for running, and storing, Trinity output.
 if [ -d trinity ]
   then rm -r trinity
@@ -99,10 +99,21 @@ cd trimmed_readcount
 mv ../../trimmomatic/*.readcount .
 cd ..
 ```
-```trinity con il tab
-#prima di far partire questo comando assicurarsi di avere il file tab_trimmmed_fastq.txt, as well as le reads trimmate, nella cartella dove faccio partire trinity.
-Trinity --seqType fq --samples_file tab_trimmed_fastq.txt --CPU 6 --max_memory 20G
-```
+ ##### Checking trinity output
+ Prima di tutto è stata fatta una RNA-seq read rapresentation dell'assemblaggio.\
+ ```
+  cd /home/STUDENTI/diego.carli/project/trinity/trinity_out_dir/.
+  mkdir checking
+  cd checking
+  ```
+  ```
+  bowtie2-build ../Trinity.fasta trinity_fasta
+  cat ../../../trimmomatic/*.fastq > all_reads.fastq
+  bowtie2 -p 10 -q --no-unal -k 20 -x trinity_fasta -U all_reads.fastq 2>align_stats.txt| samtools view -@10 -Sb -o bowtie2.bam 
+  
+  rm all_reads.fastq
+  cd ..
+ ```
 
 
 

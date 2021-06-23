@@ -140,7 +140,7 @@ cd-hit-est -i Trinity.fasta -o output.fasta -T 12 -t 1 -c 0.9
 A questo punto non ero sicuro di cosa ci fosse nei due file di output di `cd-hit-est`. Inizialmente pensavo che da una parte, in [output.fasta](https://github.com/die-lab/gamergates_project/blob/main/trinity/trinity_out_dir/output.fasta), ci fossero solamente le reads rappresentative, mentre in [output.fasta.clstr](https://github.com/die-lab/gamergates_project/blob/main/trinity/trinity_out_dir/output.fasta.clstr) ci fossero tutti i diversi cluster. Ciò non mi torna però perchè se greppo ">" in entrambi i file mi danno un numero molto diverso di righe. Dovrebbero infatti avere, questi due file, lo stesso numero di "sequenze", con da una parte solamente la sequenza rappresentativa dopo l'header con >, e dall'altra l'header, ossia il numero di cluster, indicato con >, seguito da un numero variabile di righe che mi indicano quali reads sono state abbinate a quel cluster. Riassumendo, pensavo ci fosse una sequenza rappresentativa per ogni cluster, ma invece non è così (il numero di cluster è molto più alto), e non ne ho capito il motivo. 
 
 #### Diamond
-Sono passato quindi all'annotazione. Per prima cosa devo costruire il database che userà Diamond. I due file in uscita da queste annotazioni sono rispettivamente [ouptup](https://raw.githubusercontent.com/die-lab/gamergates_project/main/diamond/ouptup) e [out.tsv](https://raw.githubusercontent.com/die-lab/gamergates_project/main/diamond/out.tsv).
+Sono passato quindi all'annotazione. Per prima cosa devo costruire il database che userà Diamond. I due file in uscita da queste annotazioni sono rispettivamente [ouptup](https://raw.githubusercontent.com/die-lab/gamergates_project/main/diamond/ouptup) e [out.tsv](https://raw.githubusercontent.com/die-lab/gamergates_project/main/diamond/out.tsv). Il secondo di questi, oltre ad avere una formattazione diversa rispetto al primo, presenta più sequenze riconosciute come ortologhe, pur utilizzando lo stesso database di ricerca, perchè è attivo il flag --very-sensitive, che trova omologie nonostanet non siano così marcate.
 ```get databases
 wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz
 wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdmp.zip
@@ -166,9 +166,10 @@ cd transdecoder
 
 TransDecoder.LongOrfs -t ../trinity/trinity_out_dir/output.fasta
 ```
+Si fa quindi l'annotazione dei geni utilizzando sia diamond blastp (il cui risultato è [questo](https://raw.githubusercontent.com/die-lab/gamergates_project/main/transdecoder/blastp.outfmt6)) che hmmscan (con [quest'altro](https://raw.githubusercontent.com/die-lab/gamergates_project/main/transdecoder/pfam.domtblout) risultato). 
 ```
 diamond blastp --query output.fasta.transdecoder_dir/longest_orfs.pep --db /var/local/uniprot/uniprot_sprot.fasta-norep_per_diamond.dmnd --eval
-ue 1e-05 --max-target-seqs 1 --threads 5 --outfmt 6 --out blastp.outfmt6 #rememba to activate base env before running it 
+ue 1e-05 --max-target-seqs 1 --threads 5 --outfmt 6 --out blastp.outfmt6 
 
 
 hmmscan --cpu 8 --domtblout pfam.domtblout /var/local/Pfam/Pfam-A.hmm output.fasta.transdecoder_dir/longest_orfs.pep 
@@ -180,5 +181,5 @@ Ed ho spostato tutti quelli che erano i file di output nella cartella `/home/STU
 
 TransDecoder.Predict ci sta tanto per esaminare le sequenze. Per capire a che punto si è dell'analisi si può usare lo script `where_are_we_transdecoder.py`. Ovviamente ci devi passare sia un file in cui ci sono tutti i geni dell'output.fasta che sto esaminando, e il nome della sequenza a cui si è arrivati, che si può vedere guardando quelllo che da a schermo TransDecoder.Predict.
 
-Ho fatto la doppia prova con TransDecoder.Predict. Da una parte l'ho fatto partire senza nessun file proveniente dalle analisi del database (file da cui il comando decide di tenere alcune sequenze in più, appunto perchè trovate all'interno di qui database, se ho capito bene). Dall'altra invece ho fatto partire il comando come si vede sopra, con --retain e i file da diamond blastp e da hmmscan. In effetti questa seconda opzione mi ha dato un maggior numero di sequenze, perchè ne tiene di più (19366 contro le 16700 del comando più spiccio, senza --retain). Per l'annotazione GO con Panzer mi sono tenuto [quello]() con più sequenze.
+Ho fatto la doppia prova con TransDecoder.Predict. Da una parte l'ho fatto partire senza nessun file proveniente dalle analisi del database (file da cui il comando decide di tenere alcune sequenze in più, appunto perchè trovate all'interno di qui database, se ho capito bene). Dall'altra invece ho fatto partire il comando come si vede sopra, con --retain e i file da diamond blastp e da hmmscan. In effetti questa seconda opzione mi ha dato un maggior numero di sequenze, perchè ne tiene di più (19366 contro le 16700 del comando più spiccio, senza --retain). Per l'annotazione GO con Panzer mi sono tenuto [quello](https://raw.githubusercontent.com/die-lab/gamergates_project/main/transdecoder/predicted.output.fasta.transdecoder/output.fasta.transdecoder.pep) con più sequenze.
 

@@ -183,12 +183,15 @@ TransDecoder.Predict ci sta tanto per esaminare le sequenze. Per capire a che pu
 
 Ho fatto la doppia prova con TransDecoder.Predict. Da una parte l'ho fatto partire senza nessun file proveniente dalle analisi del database (file da cui il comando decide di tenere alcune sequenze in più, appunto perchè trovate all'interno di qui database, se ho capito bene). Dall'altra invece ho fatto partire il comando come si vede sopra, con --retain e i file da diamond blastp e da hmmscan. In effetti questa seconda opzione mi ha dato un maggior numero di sequenze, perchè ne tiene di più (19366 contro le 16700 del comando più spiccio, senza --retain). Per l'annotazione GO con Panzer mi sono tenuto [quello](https://raw.githubusercontent.com/die-lab/gamergates_project/main/transdecoder/predicted.output.fasta.transdecoder/output.fasta.transdecoder.pep) con più sequenze.
 
-# da rivedere da qua in poi
 #### Diamond, again
 Dal momento che non ero soddisfatto dell'output del diamond blastx che avevo fatto andare qualche tempo fa, allora lo rifaccio usando le sequenze amminoacidiche che mi vengono fuori da transdecoder, così che posso usare diamond blastp.
-Rivado nella cartella di diamond, dove è stato già buildato il file `nr_diamond.dmnd`.
+Rivado nella cartella di diamond, dove è stato già buildato il database `nr_diamond.dmnd`. 
 ```diamond  blastp
  diamond blastp --db nr_diamond.dmnd --query ../transdecoder/predicted.output.fasta.transdecoder/output.fasta.transdecoder.pep  -p 12 -o ouptup --out
 fmt 6 qseqid sseqid evalue bitscore pident staxids stitle --max-target-seqs 5 --evalue 0.005
 
 diamond blastp -q ../transdecoder/predicted.output.fasta.transdecoder/output.fasta.transdecoder.pep -d nr_diamond -o out.tsv --very-sensitive
+```
+I parametri sono settati allo stesso modo della ricerca con diamond blastx fatta prima. Il numero di sequenze ortologhe riconosciute non è aumentato, anzi. Sono state trovate 44388 sequenze ortologhe, 9000 meno di quante ne aveva trovate blastx. Questo potrebbe ovviamente dipendere dal fatto che non è stato dato ai due comandi lo stesso input. La sequenza nucleotidica tradotta in amminoacidi data a diamond blastp aveva il 60% delle sequenze dell'input dato a diamond blastx (per l'effetto del taglio operato da TransDecoder nel cercare ORFs, di cui parlavo prima). Si potrebbe pensare a questo punto che blastp sia più efficace nel trovare le sequenze ortologhe, perchè ne ha rivelate l'80% a fronte di una riduzione del numero di sequenze indagate del 60%. Bisogna però anche considerare che in quel 60% di sequenze tradotte in amminoacidiche si concentreranno la maggior parte dei geni. Per poter confrontare realmente i due metodi si dovrebbe passare a diamond blastp lo stessso file di blastx tradotto interamente in amminoacidi. In sè però ha più senso utilizzare quello in uscita da TransDecoder: la ricerca delle ORFs è in se un metodo di scrematura, di filtraggio di sequenze non interessanti.
+
+# Ricordati di provare a fare blastp con il file predicted.

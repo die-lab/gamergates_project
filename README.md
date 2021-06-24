@@ -291,7 +291,24 @@ Dall'altra parte si è voluto abbassare la soglia di significatività (q è pass
 
 Sono stati stampati gli expression plot e i volcano plot per entrambe le soglie ([w_q_expr](R/w_q_expr.jpeg) e [w_q_DM](R/w_q_DM.jpeg) per q=0.95 e [w_q_expr_80](R/w_q_expr_80.jpeg) e [w_q_DM_80](R/w_q_DM_80..jpeg) per q=0.80).
 
-
+Dei due geni differentemente espressi trovati con l'analisi in R ho fatto l'annotazione con Diamond. Non sono riuscito a trovare questi geni nel file uscito da TransDecoder, forse per un problema di threshold del file di TransDecoder.  Alla fine l'ho cercato nell'`output.fasta` uscito tempo fa da trinity. Una volta ottenuto la sequenza nucleotidica me lo sono tradotto in sequenze amminoacidiche, così da poter usare blastp..
+```
+#in a directory where diff_genes is a file with differential expressed genes names.
+for i in `cat diff_genes`
+  do grep -A 1 $i ~/project/trinity/trinity_out_dir/output.fasta >> diff_expr_nucleot
+  done
+```
+```translate
+TransDecoder.LongOrfs -t diff_expr_nucleot
+rm pipeliner*
+mv diff_expr_nucleot.transdecoder_dir/longest_Orfs.pep
+rm -r *transdecoder*
+```
+```diamond
+diamond blastp --db ../diamond/nr_diamond.dmnd --query longest_orfs.pep  -p CPU -o ouptup --outfmt 6 qseqid sseqid evalue bitscore pident staxids st
+itle --max-target-seqs 5 --evalue 0.005
+```
+La ricerca con diamond non ha condotto a nessun risultato (mi crea un output vuoto). Si è pensato allora di ricercare direttamente la sequenza sul blast online. In entrambi i casi qualcosa è stato trovato, ma niente che avesse un senso biologico. Uno dei due geni mi da le best hit con Saccharomyces cerevisiae, mentre l'altro presenta un allineamento molto debole con delle sequenze batteriche. Questi risultati fanno suppore che i campioni presentino delle contaminazioni. Resta il fatto che lo studio originale è stato condotto con queste stesse sequenze (e non con un maggior numero di campioni). Quindi l'improbabile trascrizione differenziale trovata potrebbe essere dovuta a degli errori nella fase di filtraggio.
 
 #### GO enrichment
 Per l'enrichment GO in R servono dei file che verranno letti dal pacchetto topGO. Anche qui i file richiesti dovevano avere una formattazione particolare. Per ottenerli ho utilizzato due script differenti, [preparing_geneID2GO.sh](https://raw.githubusercontent.com/die-lab/gamergates_project/main/R/preparing_geneID2GO.sh) e [preparing_interesting_genes.sh](https://raw.githubusercontent.com/die-lab/gamergates_project/main/R/preparing_interesting_genes.sh), che hanno dato rispettivamente un file con tutte le annotazioni dei termini GO per ogni gene, e un file con la lista dei geni interessanti, riconosciuti come differentemente espressi.
@@ -302,7 +319,8 @@ Questa analisi non ha condotto ai risultati sperati, probabilmente perchè si so
 
 Di fatto l'arricchimento è significativo per geni poco specifici. Speravo di trovare esattamente il gene, o il prodotto proteico, responsabile di questo shift da operaia a regina sostitutiva, ma non è stato così semplice. In realtà pensavo di riuscire a trovarlo già da prima dell'arricchimento, ossia dalla trascrizione differenziale. Credo che in entrambi i casi abbia giocato un ruolo fondamentale il filtraggio e le soglie impostate. 
 
-È vero che nello studio a cui mi ispiro per questo progetto è stata trovata una correlazione tra lo shift di comportamento e l'espressione di corazonina e vitellogenina, ma probabilmente a cascata vengono a formarsi molti altri processi che producono lo shift. Questi altri processi potrebbero con la loro espressione quella che è la causa (o una delle cause) a monte. 
+È vero che nello studio a cui mi ispiro per questo progetto è stata trovata una correlazione tra lo shift di comportamento e l'espressione di corazonina e vitellogenina, ma probabilmente a cascata vengono a formarsi molti altri processi che producono lo shift. Questi altri processi potrebbero coprire con la loro espressione quella che è la causa (o una delle cause) a monte. Comunque le analisi non sono cambiate troppo rispetto al lavoro originale, se non per i pacchetti utilizzati. I risultati però sono parecchio diversi, basti pensare al loro volcano plots che riesce a individuare benissimo la corazonina. 
+
 
 
 

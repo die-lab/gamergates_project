@@ -270,7 +270,7 @@ mv nuovissimo mycounts
 rm nuovo header tabulato
 ```
 Il documento differential_expression.R nella cartella R, qui su github, mostra i diversi passaggi.
-![Image](https://github.com/die-lab/gamergates_project/blob/main/R/mysaturationplot.pdf)
+![Image](R/mysaturationplot.jpeg)
 
   
 Nel condurre l'analisi, tenendo tutti i valori di default per aver un buon filtraggio e una buona significatività, i geni che sono stati riconosciuti come differentemente espressi erano soltanto due. Questi due geni allora sono stati utilizzati per annotarli con diamond.

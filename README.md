@@ -287,8 +287,12 @@ Passata la fase di filtraggio per le sequenze con un alto numero di *counts per 
 #### Espressione differenziale
 Nel condurre l'analisi, tenendo tutti i valori di default per aver un buon filtraggio e una buona significatività, i geni che sono stati riconosciuti come differentemente espressi sono soltanto [due](R/w_q_de). Questi due geni allora sono stati utilizzati per l'annotazione con diamond. Il basso numerro di geni in questo caso potrebbe dipendere da una soglia troppo stringente. Questa soglia si può aggiustare con il parametro q, però come da manuale è consigliato settare q su 0.95 quando si utilizza la funzione *noiseqbio*.
 
-![Image](R/w_q_DM.jpeg) 
-![Image](R/w_q_expr.jpeg)
+Dall'altra parte si è voluto abbassare la soglia di significatività (q è passato da 0.95 a 0.80), per avere un numero di geni differentemente espressi più alto (che in effetti è saltato a 7833). Dall'altra parte questa operazione ha introdotto una quantità non definibile di falsi positivi nell'analisi. Nonostante sia sconsigliato abbassare la soglia, in questo modo sono riuscito a fare un GO enrichment dei geni nella fase successiva.
 
-Dall'altra parte si è voluto abbassare la soglia di significatività (q è passato da 0.95 a 0.80), per avere un numero di geni differentemente espressi più alto. Dall'altra parte questa operazione ha introdotto una quantità non definibile di falsi positivi nell'analisi. In questo modo sono riuscito a fare un GO enrichment dei geni.
+Sono stati stampati gli expression plot e i volcano plot per entrambe le soglie ([w_q_expr](R/w_q_expr.jpeg) e [w_q_DM](R/w_q_DM.jpeg) per q=0.95 e [w_q_expr_80](R/w_q_expr_80.jpeg) e [w_q_DM_80](R/w_q_DM_80..jpeg) per q=0.80).
+
+
+#### GO enrichment
+
+
  

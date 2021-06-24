@@ -271,13 +271,22 @@ rm nuovo header tabulato
 ```
 Il documento differential_expression.R nella cartella R, qui su github, mostra i diversi passaggi.
 
-###### normalizzazione
+###### Normalizzazione
 Per prima cosa si quantifica l'espressione e la *sequencing depth*. Un modo per visualizzare graficamente queste informazini è il *saturation plot*, il quale mostra il numero di geni individuati dal mappaggio con un numero superiore ad un dato valore di reads mappanti su questi. Questa quantificazione è stata fatta sia per i campioni reali (nell'immagine, quelli con il punto pieno), che per altri simulati (quelli vuoti).
 ![Image](R/mysaturationplot.jpeg)
 
 Un'altro modo per visualizzare la quantificazione dell'espressione è il *sensivity plot*. Questo mostra invece per ogni soglia (in milioni di reads che mappano) il numero di geni che soddisfano, come espressione, quella soglia. 
 ![Image](R/mycountsbio.jpeg)
-  
+
+Non c'è stato bisogno di normalizzare i dati anche per la lunghezza e per il contenuto in basi, dal momento che erano diversi campioni di una stessa specie (è un analisi tra condizioni, non interspecie).
+
+Passata la fase di filtraggio per le sequenze con un alto numero di *counts per million* (CPM), si verifica la corretta esecuzione di questa mostrando la nuova distribuzione.
+![Image](R/mycountsbio_filtered.jpeg)
+
+
+##### Espressione differenziale
+
+
 Nel condurre l'analisi, tenendo tutti i valori di default per aver un buon filtraggio e una buona significatività, i geni che sono stati riconosciuti come differentemente espressi erano soltanto due. Questi due geni allora sono stati utilizzati per annotarli con diamond.
 
 Dall'altra parte si è voluto abbassare la soglia di significatività (q è passato da 0.95 a 0.80), per avere un numero di geni differentemente espressi più alto. Dall'altra parte questa operazione ha introdotto una quantità non definibile di falsi positivi nell'analisi. In questo modo sono riuscito a fare un GO enrichment dei geni.

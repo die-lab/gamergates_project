@@ -301,7 +301,7 @@ for i in `cat diff_genes`
 ```translate
 TransDecoder.LongOrfs -t diff_expr_nucleot
 rm pipeliner*
-mv diff_expr_nucleot.transdecoder_dir/longest_Orfs.pep
+mv diff_expr_nucleot.transdecoder_dir/longest_Orfs.pep .
 rm -r *transdecoder*
 ```
 ```diamond

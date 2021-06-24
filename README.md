@@ -194,4 +194,33 @@ diamond blastp -q ../transdecoder/predicted.output.fasta.transdecoder/output.fas
 ```
 I parametri sono settati allo stesso modo della ricerca con diamond blastx fatta prima. Il numero di sequenze ortologhe riconosciute non è aumentato, anzi. Sono state trovate 44388 sequenze ortologhe, 9000 meno di quante ne aveva trovate blastx. Questo potrebbe ovviamente dipendere dal fatto che non è stato dato ai due comandi lo stesso input. La sequenza nucleotidica tradotta in amminoacidi data a diamond blastp aveva il 60% delle sequenze dell'input dato a diamond blastx (per l'effetto del taglio operato da TransDecoder nel cercare ORFs, di cui parlavo prima). Si potrebbe pensare a questo punto che blastp sia più efficace nel trovare le sequenze ortologhe, perchè ne ha rivelate l'80% a fronte di una riduzione del numero di sequenze indagate del 60%. Bisogna però anche considerare che in quel 60% di sequenze tradotte in amminoacidiche si concentreranno la maggior parte dei geni. Per poter confrontare realmente i due metodi si dovrebbe passare a diamond blastp lo stessso file di blastx tradotto interamente in amminoacidi. In sè però ha più senso utilizzare quello in uscita da TransDecoder: la ricerca delle ORFs è in se un metodo di scrematura, di filtraggio di sequenze non interessanti.
 
-# Ricordati di provare a fare blastp con il file predicted.
+#### Pannzer2
+Ho caricato il file /home/STUDENTI/diego.carli/project/transdecoder/predicted.output.fasta.transdecoder/output.fasta.transdecoder.pep su Pannzer2, specificando il nome della specie *Harpegnathos saltator*. I risultati si possono vedere, anche se non so per quanto, [in questa pagina](http://ekhidna2.biocenter.helsinki.fi/barcosel/tmp//6N907zxa3LQ/index.html).
+
+Per scaricare sul server i file di panzer, ho usato:
+```
+mkdir pannzer 
+cd pannzer
+
+wget http://ekhidna2.biocenter.helsinki.fi/barcosel/tmp//6N907zxa3LQ/anno.out
+wget http://ekhidna2.biocenter.helsinki.fi/barcosel/tmp//6N907zxa3LQ/GO.out
+```
+Tra i diversi file prodotti da pannzer, ho utilizzato GO.out per le succcessive analisi di trascrizione differenziale e arricchimento dei termini GO.
+
+#### Bowtie2
+Ho usato bowtie per mappare le reads sull'assemblaggio che mi sono fatto con trinity (quello pulito dalle isoforme ridondanti). Per la trascrizione differenziale che seguirà, e alla quale serviranno i diversi file di mappaggio, servirà avere un file di mappaggio per ogni diversa condizione (nel mio caso sono due, queen e worker). Di conseguenza ho fatto mappaggio diversi, ossia uno per campione. Le statistiche del mappaggio le ho copiate e incollate in un file `alignment_rate.txt`, perchè non sono riuscito a reindirizzarle automaticamente. 
+```
+cd ~/project/
+if [ -d bowtie ]
+  then rm -r bowtie
+  fi
+mkdir bowtie
+cd bowtie
+
+bowtie2-build ../trinity/trinity_out_dir/output.fasta output_index
+
+for infile in /home/STUDENTI/diego.carli/project/trimmomatic/*.trim.fastq
+  do bowtie2 -x output_index -U $infile -S ${infile%.fastq}_reads_mapped.sam
+  done
+  
+mv ../trimmomatic/*.sam .

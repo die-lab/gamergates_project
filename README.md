@@ -9,7 +9,7 @@ Il discorso è molto più lungo e complicato di così, per cui rimando all'artic
 
 Quello che ho cercato di fare è un'analisi di trascrizione differenziale tra operaie e regina di Harpegnathos saltator, utilizzando gli stessi dati del paper di cui parlo sopra. 
 
-#### SAMPLE
+### SAMPLE
 
 Sample | SRA |
 ------ | --- | 
@@ -20,7 +20,7 @@ queens, 120d | SRR5909303 |
 queens, 120d | SRR5909301 | 
 queens, 120d | SRR5909299 |
 
-#### Download and check fastq file
+### Download and check fastq file
 Ho scaricato le reads da NCBI prendendo i codici SRA dal paper (quelli in tabella qua sopra). Poi le ho validate utilizzando la cartella che viene scaricata automaticamente con `fastq-dump`. In più per ogni campione è stata fatta l'analisi utilizzando fastqc.
 ```download
 fastq-dump --defline-seq '@$sn[_$rn]/$ri' <SRACODE>
@@ -42,7 +42,7 @@ cd fastqc
 fastqc ../fastq/*.fastq -o fastqc
 ```
 
-#### Trimming
+### Trimming
 Le reads sono state trimmate e poi analizzate con fastqc, per vedere quanto erano migliorate con il trimming. I risultati si possono vedere [qui.](https://github.com/die-lab/gamergates_project/tree/main/fastqc)
 ```create the directory for storing trimmed reads
 if [ -d trimmomatic ]
@@ -75,7 +75,7 @@ queens, 120d | SRR5909303 | 22630380 | 15362292 | 0.68 |
 queens, 120d | SRR5909301 | 22593965 | 15206110 | 0.67 |
 queens, 120d | SRR5909299 | 20493983 | 12306915 | 0.60 |
 
-#### Trinity
+### Trinity
 Sono passato quindi alla fase di assemblaggio del trascrittoma. Essendoci relativamente poche sequenze, o perlomeno file fastq con una dimensione accettabile, ho fatto partire l'analisi di Trinity senza prima fare il subsampling. Sarebbe stato meglio avere più campioni e di questi prenderne solamente una parte, così da avere delle sequenze più rappresentative. Putroppo però i campioni erano solamente questi qui.
 ```create the directory for running, and storing, Trinity output.
 if [ -d trinity ]
@@ -99,7 +99,7 @@ cd trimmed_readcount
 mv ../../trimmomatic/*.readcount .
 cd ..
 ```
- ##### Checking trinity output
+ #### Checking trinity output
  Prima di tutto è stata fatta una RNA-seq read rapresentation dell'assemblaggio. Le statistiche dell'allineamento, visibili qui, non sono male. Meno del 9% delle reads da cui si è ottenuto l'assemblaggio non mappano sull'assemblaggio stesso. 
  ```
   cd /home/STUDENTI/diego.carli/project/trinity/trinity_out_dir/.
@@ -139,7 +139,7 @@ cd-hit-est -i Trinity.fasta -o output.fasta -T 12 -t 1 -c 0.9
 ```
 A questo punto non ero sicuro di cosa ci fosse nei due file di output di `cd-hit-est`. Inizialmente pensavo che da una parte, in [output.fasta](https://github.com/die-lab/gamergates_project/blob/main/trinity/trinity_out_dir/output.fasta), ci fossero solamente le reads rappresentative, mentre in [output.fasta.clstr](https://github.com/die-lab/gamergates_project/blob/main/trinity/trinity_out_dir/output.fasta.clstr) ci fossero tutti i diversi cluster. Ciò non mi torna però perchè se greppo ">" in entrambi i file mi danno un numero molto diverso di righe. Dovrebbero infatti avere, questi due file, lo stesso numero di "sequenze", con da una parte solamente la sequenza rappresentativa dopo l'header con >, e dall'altra l'header, ossia il numero di cluster, indicato con >, seguito da un numero variabile di righe che mi indicano quali reads sono state abbinate a quel cluster. Riassumendo, pensavo ci fosse una sequenza rappresentativa per ogni cluster, ma invece non è così (il numero di cluster è molto più alto), e non ne ho capito il motivo. 
 
-#### Diamond
+### Diamond
 Sono passato quindi all'annotazione. Per prima cosa devo costruire il database che userà Diamond. I due file in uscita da queste annotazioni sono rispettivamente [ouptup](https://raw.githubusercontent.com/die-lab/gamergates_project/main/diamond/ouptup) e [out.tsv](https://raw.githubusercontent.com/die-lab/gamergates_project/main/diamond/out.tsv). Il secondo di questi, oltre ad avere una formattazione diversa rispetto al primo, presenta più sequenze riconosciute come ortologhe, pur utilizzando lo stesso database di ricerca, perchè è attivo il flag --very-sensitive, che trova omologie nonostante non siano così marcate.
 ```get databases
 wget ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz
@@ -154,7 +154,7 @@ diamond blastx -q ../trinity/trinity_out_dir/output.fasta -d nr_diamond -o out.t
 ```
 Qui non avevo usato blastp perchè ovviamente non andava, avendo ancora le sequenze nucleotidiche e non amminoacidiche. Motivo per cui l'ho rifatto, dopo un po', quando avevo anche le sequenze amminoacidiche in uscita da TransDecoder.
 
-#### TransDecoder
+### TransDecoder
 È stato usato per predirre le ORFs tra i geni assemblati, o meglio partendo dal file fasta assemblato che deriva da Trinity, dalla quale sono state però eliminate le reads ridondanti. Il primo step mi è servito anche per tradurre in amminoacidiche le sequenze nucleotidiche, così da poter utilizzare diamond blastp. Utilizzando questo strumento per la traduzione si va inevitabilmente a perdere tutte le sequenze inferiori a 100 amminoacidi di lunghezza. Si potrebbe cambiare questa threshold con un semplice flag, ma ho voluto tenerla così perchè, come dice il manuale di TransDecoder, andrebbero ad aumentare il numero di falsi positivi. La percentuale di geni sopravvissuta alla traduzione è del 60% circa (36095 contro i 58620 dell'assemblaggio senza isoforme).
 ```
 cd ~/project/
@@ -183,7 +183,7 @@ TransDecoder.Predict ci sta tanto per esaminare le sequenze. Per capire a che pu
 
 Ho fatto la doppia prova con TransDecoder.Predict. Da una parte l'ho fatto partire senza nessun file proveniente dalle analisi del database (file da cui il comando decide di tenere alcune sequenze in più, appunto perchè trovate all'interno di qui database, se ho capito bene). Dall'altra invece ho fatto partire il comando come si vede sopra, con --retain e i file da diamond blastp e da hmmscan. In effetti questa seconda opzione mi ha dato un maggior numero di sequenze, perchè ne tiene di più (19366 contro le 16700 del comando più spiccio, senza --retain). Per l'annotazione GO con Panzer mi sono tenuto [quello](https://raw.githubusercontent.com/die-lab/gamergates_project/main/transdecoder/predicted.output.fasta.transdecoder/output.fasta.transdecoder.pep) con più sequenze.
 
-#### Diamond, di nuovo.
+### Diamond, di nuovo.
 Dal momento che non ero soddisfatto dell'output del diamond blastx che avevo fatto andare qualche tempo fa, allora lo rifaccio usando le sequenze amminoacidiche che mi vengono fuori da transdecoder, così che posso usare diamond blastp.
 Rivado nella cartella di diamond, dove è stato già buildato il database `nr_diamond.dmnd`. 
 ```diamond  blastp
@@ -192,7 +192,7 @@ fmt 6 qseqid sseqid evalue bitscore pident staxids stitle --max-target-seqs 5 --
 ```
 I parametri sono settati allo stesso modo della ricerca con diamond blastx fatta prima. Solo l'input è cambiato. Al posto di dargli in input il file con le ORFs proveniente dal primo step di TransDecoder gli ho dato le *likely coding region* provenienti da TransDecoder.Predict (il numero di sequenze è quasi dimezzato, passando da 36096 delle longest.orfs alle 19367 delle *likely coding regions*). Il numero di sequenze ortologhe riconosciute non è aumentato, anzi. Sono state trovate 44388 sequenze ortologhe, 9000 meno di quante ne aveva trovate blastx. Questo potrebbe ovviamente dipendere dal fatto che non è stato dato ai due comandi lo stesso input. il numero di sequenze delle *likely coding regions* data a diamond blastp è il 33% circa (19367 contro i 58620) delle sequenze dell'input dato a diamond blastx (per l'effetto del taglio operato da TransDecoder nel cercare le *likely coding regions*). Si potrebbe pensare a questo punto che blastp sia più efficace nel trovare le sequenze ortologhe, perchè ne ha rivelate l'80% a fronte di una riduzione del numero di sequenze indagate al 33%. Bisogna però anche considerare che in quel 33% di sequenze tradotte in amminoacidiche si concentreranno la maggior parte dei geni. Per poter confrontare realmente i due metodi si dovrebbe passare a diamond blastp lo stesso file di blastx tradotto interamente in amminoacidi. Forse però ha più senso utilizzare quello in uscita da TransDecoder: la ricerca delle ORFs è in se un metodo di scrematura, di filtraggio di sequenze non interessanti.
 
-#### Pannzer2
+### Pannzer2
 Ho caricato il file /home/STUDENTI/diego.carli/project/transdecoder/predicted.output.fasta.transdecoder/output.fasta.transdecoder.pep su Pannzer2, specificando il nome della specie *Harpegnathos saltator*. I risultati si possono vedere, anche se non so per quanto, [in questa pagina](http://ekhidna2.biocenter.helsinki.fi/barcosel/tmp//6N907zxa3LQ/index.html), oppure nell'apposita directory [qui](https://github.com/die-lab/gamergates_project/tree/main/pannzer) su github.
 
 Per scaricare sul server i file di panzer, ho usato:
@@ -206,7 +206,7 @@ wget http://ekhidna2.biocenter.helsinki.fi/barcosel/tmp//6N907zxa3LQ/DE.out
 ```
 Tra i diversi file prodotti da pannzer, ho utilizzato GO.out per le succcessive analisi di trascrizione differenziale e arricchimento dei termini GO.
 
-#### Bowtie2
+### Bowtie2
 Ho usato bowtie per mappare le reads sull'assemblaggio che mi sono fatto con trinity (quello pulito dalle isoforme ridondanti). Per la trascrizione differenziale che seguirà, e alla quale serviranno i diversi file di mappaggio, servirà avere un file di mappaggio per ogni diverso campione, così da trovare espressione differenziale tra le due condizioni (gamergates e worker). Di conseguenza ho fatto un mappaggio per ciascun campione. Le statistiche del mappaggio le ho copiate e incollate in un file [alignment_rate.txt], perchè non sono riuscito a reindirizzarle automaticamente. 
 ```
 cd ~/project/
@@ -225,7 +225,7 @@ for infile in /home/STUDENTI/diego.carli/project/trimmomatic/*.trim.fastq
 mv ../trimmomatic/*.sam .
 ```
 
-#### Filtering
+### Filtering
 Si procede poi con il filtraggio dei mappaggi. Per filtrare i diversi file uso un unico loop, che prenderà ciascun file di mappagio (uno per campione). 
 ```
 cd /home/STUDENTI/diego.carli/project/bowtie/
@@ -240,7 +240,7 @@ for i in *.sam
  ```
 Tra i diversi file che mi sono creato con questi passaggi, gli unici che mi serviranno saranno [quelli con le statistiche di mappaggio](https://github.com/die-lab/gamergates_project/tree/main/bowtie). In questi file è mostrato per ogni trascritto dell'assemblaggio la sua lunghezza e quante reads ci mappano sopra.
 
-#### R
+### R
 Per l'analisi di trascrizione differenziale della parte seguente, in R, servono dei geni formattati in una maniera specifica, affinchè l'oggetto creato possa essere letto correttamente da una funzione del pacchetto *NOISeq*.
 Questo formato deve avere come prima colonna il gene (essendo stato sortato allora l'ordine sarà uguali in tutti), e nelle altre il numero di reads che mappavano su quel gene, per ogni campione. 
 
@@ -271,7 +271,7 @@ rm nuovo header tabulato
 ```
 Il documento differential_expression.R nella cartella R, qui su github, mostra i diversi passaggi.
 
-###### Normalizzazione
+#### Normalizzazione
 Per prima cosa si quantifica l'espressione e la *sequencing depth*. Un modo per visualizzare graficamente queste informazini è il *saturation plot*, il quale mostra il numero di geni individuati dal mappaggio con un numero superiore ad un dato valore di reads mappanti su questi. Questa quantificazione è stata fatta sia per i campioni reali (nell'immagine, quelli con il punto pieno), che per altri simulati (quelli vuoti).
 ![Image](R/mysaturationplot.jpeg)
 
@@ -284,7 +284,7 @@ Passata la fase di filtraggio per le sequenze con un alto numero di *counts per 
 ![Image](R/mycountsbio_filtered.jpeg)
 
 
-##### Espressione differenziale
+#### Espressione differenziale
 
 
 Nel condurre l'analisi, tenendo tutti i valori di default per aver un buon filtraggio e una buona significatività, i geni che sono stati riconosciuti come differentemente espressi erano soltanto due. Questi due geni allora sono stati utilizzati per annotarli con diamond.

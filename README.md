@@ -207,7 +207,7 @@ wget http://ekhidna2.biocenter.helsinki.fi/barcosel/tmp//6N907zxa3LQ/DE.out
 Tra i diversi file prodotti da pannzer, ho utilizzato GO.out per le succcessive analisi di trascrizione differenziale e arricchimento dei termini GO.
 
 #### Bowtie2
-Ho usato bowtie per mappare le reads sull'assemblaggio che mi sono fatto con trinity (quello pulito dalle isoforme ridondanti). Per la trascrizione differenziale che seguirà, e alla quale serviranno i diversi file di mappaggio, servirà avere un file di mappaggio per ogni diversa condizione (nel mio caso sono due, queen e worker). Di conseguenza ho fatto mappaggio diversi, ossia uno per campione. Le statistiche del mappaggio le ho copiate e incollate in un file `alignment_rate.txt`, perchè non sono riuscito a reindirizzarle automaticamente. 
+Ho usato bowtie per mappare le reads sull'assemblaggio che mi sono fatto con trinity (quello pulito dalle isoforme ridondanti). Per la trascrizione differenziale che seguirà, e alla quale serviranno i diversi file di mappaggio, servirà avere un file di mappaggio per ogni diverso campione, così da trovare espressione differenziale tra le due condizioni (gamergates e worker). Di conseguenza ho fatto un mappaggio per ciascun campione. Le statistiche del mappaggio le ho copiate e incollate in un file [alignment_rate.txt], perchè non sono riuscito a reindirizzarle automaticamente. 
 ```
 cd ~/project/
 if [ -d bowtie ]
@@ -223,3 +223,55 @@ for infile in /home/STUDENTI/diego.carli/project/trimmomatic/*.trim.fastq
   done
   
 mv ../trimmomatic/*.sam .
+```
+
+#### Filtering
+Si procede poi con il filtraggio dei mappaggi. Per filtrare i diversi file uso un unico loop, che prenderà ciascun file di mappagio (uno per campione). 
+```
+cd /home/STUDENTI/diego.carli/project/bowtie/
+
+for i in *.sam 
+  do 
+  samtools view -h -F 256 -q 30 -Sb $i > ${i%.sam}.bam
+  samtools sort ${i%.sam}.bam > ${i%.sam}.sorted.bam
+  samtools index ${i%.sam}.sorted.bam 
+  samtools idxstats ${i%.sam}.sorted.bam> ${i%.sam}.stats
+  done
+ ```
+Tra i diversi file che mi sono creato con questi passaggi, gli unici che mi serviranno saranno [quelli con le statistiche di mappaggio](https://github.com/die-lab/gamergates_project/tree/main/bowtie). In questi file è mostrato per ogni trascritto dell'assemblaggio la sua lunghezza e quante reads ci mappano sopra.
+
+#### R
+Per l'analisi di trascrizione differenziale della parte seguente, in R, servono dei geni formattati in una maniera specifica, affinchè l'oggetto creato possa essere letto correttamente da una funzione del pacchetto *NOISeq*.
+Questo formato deve avere come prima colonna il gene (essendo stato sortato allora l'ordine sarà uguali in tutti), e nelle altre il numero di reads che mappavano su quel gene, per ogni campione. 
+
+```tabulato
+awk '{print $1}' SRR5909317.trim_reads_mapped.stats > tabulato
+
+for i in *.stats
+  do awk '{print $3}' $i > prova1
+  paste -d'\t' tabulato prova1> tempo
+  cat tempo>tabulato
+  done
+
+rm tempo prova1
+
+echo gene > header
+
+for i in *.stats
+  do echo ${i%.trim_reads_mapped.stats} >> header
+  done
+
+testa=`cat header`
+echo $testa > nuovo
+sed -e 's/ /\t/g' nuovo > nuovissimo
+
+cat tabulato >> nuovissimo
+mv nuovissimo mycounts
+rm nuovo header tabulato
+```
+Per il resto ho utilizzato lo script di Mariangela, cambiando un po'. Il documento differential_expression.R nella cartella R, qui su github, mi dice tutto quello che ho fatto.
+  
+Nel condurre l'analisi, tenendo tutti i valori di default per aver un buon filtraggio e una buona significatività, i geni che sono stati riconosciuti come differentemente espressi erano soltanto due. Questi due geni allora sono stati utilizzati per annotarli con diamond.
+
+Dall'altra parte si è voluto abbassare la soglia di significatività (q è passato da 0.95 a 0.80), per avere un numero di geni differentemente espressi più alto. Dall'altra parte questa operazione ha introdotto una quantità non definibile di falsi positivi nell'analisi. In questo modo sono riuscito a fare un GO enrichment dei geni.
+ 

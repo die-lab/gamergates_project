@@ -192,9 +192,6 @@ fmt 6 qseqid sseqid evalue bitscore pident staxids stitle --max-target-seqs 5 --
 ```
 I parametri sono settati allo stesso modo della ricerca con diamond blastx fatta prima. Solo l'input è cambiato. Al posto di dargli in input il file con le ORFs proveniente dal primo step di TransDecoder gli ho dato le *likely coding region* provenienti da TransDecoder.Predict (il numero di sequenze è quasi dimezzato, passando da 36096 delle longest.orfs alle 19367 delle *likely coding regions*). Il numero di sequenze ortologhe riconosciute non è aumentato, anzi. Sono state trovate 44388 sequenze ortologhe, 9000 meno di quante ne aveva trovate blastx. Questo potrebbe ovviamente dipendere dal fatto che non è stato dato ai due comandi lo stesso input. il numero di sequenze delle *likely coding regions* data a diamond blastp è il 33% circa (19367 contro i 58620) delle sequenze dell'input dato a diamond blastx (per l'effetto del taglio operato da TransDecoder nel cercare le *likely coding regions*). Si potrebbe pensare a questo punto che blastp sia più efficace nel trovare le sequenze ortologhe, perchè ne ha rivelate l'80% a fronte di una riduzione del numero di sequenze indagate al 33%. Bisogna però anche considerare che in quel 33% di sequenze tradotte in amminoacidiche si concentreranno la maggior parte dei geni. Per poter confrontare realmente i due metodi si dovrebbe passare a diamond blastp lo stesso file di blastx tradotto interamente in amminoacidi. Forse però ha più senso utilizzare quello in uscita da TransDecoder: la ricerca delle ORFs è in se un metodo di scrematura, di filtraggio di sequenze non interessanti.
 
-# Rivedi questa parte, non so come inserirla dentro.
-Il comando per l'annotazione che segue è simile a quello sopra, ma come input sono state date le sequenze amminoacidiche prodotte dal secondo transdecoder (TransDecoder.Predicted). Ci si dovrebbe aspettare un maggior numero di sequenze, perchè vengono ricercate pure le sequenze riconosciute interessanti dalle precedenti annotazioni con blastp e hmmer, oltre a quelle uscite dal primo step di transdecoder. 
-
 #### Pannzer2
 Ho caricato il file /home/STUDENTI/diego.carli/project/transdecoder/predicted.output.fasta.transdecoder/output.fasta.transdecoder.pep su Pannzer2, specificando il nome della specie *Harpegnathos saltator*. I risultati si possono vedere, anche se non so per quanto, [in questa pagina](http://ekhidna2.biocenter.helsinki.fi/barcosel/tmp//6N907zxa3LQ/index.html), oppure nell'apposita directory [qui](https://github.com/die-lab/gamergates_project/tree/main/pannzer) su github.
 
@@ -205,6 +202,7 @@ cd pannzer
 
 wget http://ekhidna2.biocenter.helsinki.fi/barcosel/tmp//6N907zxa3LQ/anno.out
 wget http://ekhidna2.biocenter.helsinki.fi/barcosel/tmp//6N907zxa3LQ/GO.out
+wget http://ekhidna2.biocenter.helsinki.fi/barcosel/tmp//6N907zxa3LQ/DE.out
 ```
 Tra i diversi file prodotti da pannzer, ho utilizzato GO.out per le succcessive analisi di trascrizione differenziale e arricchimento dei termini GO.
 

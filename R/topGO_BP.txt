@@ -1,0 +1,11 @@
+GO.ID	Term	Annotated	Significant	Expected	classicFisher
+GO:0045047	protein targeting to ER	87	70	32.95	2.0e-16
+GO:0072599	establishment of protein localization to...	89	71	33.71	2.8e-16
+GO:0006614	SRP-dependent cotranslational protein ta...	78	64	29.54	6.5e-16
+GO:0006613	cotranslational protein targeting to mem...	83	67	31.44	6.6e-16
+GO:0070972	protein localization to endoplasmic reti...	102	76	38.63	2.1e-14
+GO:0000184	nuclear-transcribed mRNA catabolic proce...	89	65	33.71	8.6e-12
+GO:0006612	protein targeting to membrane	118	80	44.69	1.8e-11
+GO:0006605	protein targeting	173	105	65.52	3.1e-10
+GO:0002181	cytoplasmic translation	112	72	42.42	7.2e-09
+GO:0000956	nuclear-transcribed mRNA catabolic proce...	118	75	44.69	7.3e-09

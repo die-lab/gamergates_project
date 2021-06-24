@@ -275,7 +275,7 @@ Il documento differential_expression.R nella cartella R, qui su github, mostra i
 Per prima cosa si quantifica l'espressione e la *sequencing depth*. Un modo per visualizzare graficamente queste informazini è il *saturation plot*, il quale mostra il numero di geni individuati dal mappaggio con un numero superiore ad un dato valore di reads mappanti su questi. Questa quantificazione è stata fatta sia per i campioni reali (nell'immagine, quelli con il punto pieno), che per altri simulati (quelli vuoti).
 ![Image](R/mysaturationplot.jpeg)
 
-Un'altro modo per visualizzare la quantificazione dell'espressione è il *sensivity plot*. Questo mostra invece per ogni soglia (in milioni di reads che mappano) il numero di geni che soddisfano, come espressione e quindi come numero di geni mappati, quella soglia. 
+Un'altro modo per visualizzare la quantificazione dell'espressione è il *sensivity plot*. Questo mostra invece per ogni soglia (in milioni di reads che mappano) il numero di geni che soddisfano, come espressione, quella soglia. 
 ![Image](R/mycountsbio.jpeg)
   
 Nel condurre l'analisi, tenendo tutti i valori di default per aver un buon filtraggio e una buona significatività, i geni che sono stati riconosciuti come differentemente espressi erano soltanto due. Questi due geni allora sono stati utilizzati per annotarli con diamond.

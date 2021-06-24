@@ -293,6 +293,10 @@ Sono stati stampati gli expression plot e i volcano plot per entrambe le soglie 
 
 
 #### GO enrichment
+Per l'enrichment GO in R servono dei file che verranno letti dal pacchetto topGO. Anche qui i file richiesti dovevano avere una formattazione particolare. Per ottenerli ho utilizzato due script differenti, [preparing_geneID2GO.sh](https://raw.githubusercontent.com/die-lab/gamergates_project/main/R/preparing_geneID2GO.sh) e [preparing_interesting_genes.sh](https://raw.githubusercontent.com/die-lab/gamergates_project/main/R/preparing_interesting_genes.sh), che hanno dato rispettivamente un file con tutte le annotazioni dei termini GO per ogni gene, e un file con la lista dei geni interessanti, riconosciuti come differentemente espressi.
 
+I comandi utilizzati nell'analisi con topGO si trovano [in questo script]().
+
+Questa analisi non ha condotto ai risultati sperati, probabilmente perchè si sono trattati come differenzialmente espressi dei geni che non lo erano, per la questione dell'abbassamento della soglia. Si possono scegliere quanti dei geni visualizzare, una volta che sono stati sortati per lo score del test di Fisher. Qui sono mostrati i prii
 
  

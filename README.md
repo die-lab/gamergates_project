@@ -196,7 +196,7 @@ I parametri sono settati allo stesso modo della ricerca con diamond blastx fatta
 Il comando per l'annotazione che segue è simile a quello sopra, ma come input sono state date le sequenze amminoacidiche prodotte dal secondo transdecoder (TransDecoder.Predicted). Ci si dovrebbe aspettare un maggior numero di sequenze, perchè vengono ricercate pure le sequenze riconosciute interessanti dalle precedenti annotazioni con blastp e hmmer, oltre a quelle uscite dal primo step di transdecoder. 
 
 #### Pannzer2
-Ho caricato il file /home/STUDENTI/diego.carli/project/transdecoder/predicted.output.fasta.transdecoder/output.fasta.transdecoder.pep su Pannzer2, specificando il nome della specie *Harpegnathos saltator*. I risultati si possono vedere, anche se non so per quanto, [in questa pagina](http://ekhidna2.biocenter.helsinki.fi/barcosel/tmp//6N907zxa3LQ/index.html).
+Ho caricato il file /home/STUDENTI/diego.carli/project/transdecoder/predicted.output.fasta.transdecoder/output.fasta.transdecoder.pep su Pannzer2, specificando il nome della specie *Harpegnathos saltator*. I risultati si possono vedere, anche se non so per quanto, [in questa pagina](http://ekhidna2.biocenter.helsinki.fi/barcosel/tmp//6N907zxa3LQ/index.html), oppure nell'apposita directory [qui](https://github.com/die-lab/gamergates_project/tree/main/pannzer) su github.
 
 Per scaricare sul server i file di panzer, ho usato:
 ```

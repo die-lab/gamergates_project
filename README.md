@@ -269,7 +269,7 @@ cat tabulato >> nuovissimo
 mv nuovissimo mycounts
 rm nuovo header tabulato
 ```
-Il documento differential_expression.R nella cartella R, qui su github, mostra i diversi passaggi.
+Il documento [differential_expression.R](R/differential_expression.R) nella cartella R, qui su github, mostra i diversi passaggi.
 
 #### Normalizzazione
 Per prima cosa si quantifica l'espressione e la *sequencing depth*. Un modo per visualizzare graficamente queste informazini è il *saturation plot*, il quale mostra il numero di geni individuati dal mappaggio con un numero superiore ad un dato valore di reads mappanti su questi. Questa quantificazione è stata fatta sia per i campioni reali (nell'immagine, quelli con il punto pieno), che per altri simulati (quelli vuoti).
